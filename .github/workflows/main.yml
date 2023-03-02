@@ -1,0 +1,15 @@
+name: Mondoo Kubernetes Manifest scan
+on:
+  push:
+    paths:
+      - "k8s/*.yaml"
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: mondoohq/actions/k8s-manifest@v0.9.3
+        env:
+          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
+        with:
+          path: k8s/manifest.yaml
