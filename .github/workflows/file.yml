@@ -11,4 +11,4 @@ jobs:
           MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_CONFIG_BASE64 }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-          repository: ${{ GITHUB_REPOSITORY }}
+          repository: Rkiler/new
