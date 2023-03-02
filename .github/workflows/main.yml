@@ -1,15 +1,43 @@
-name: Mondoo Kubernetes Manifest scan
-on:
-  push:
-    paths:
-      - "k8s/*.yaml"
-jobs:
-  scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: mondoohq/actions/k8s-manifest@v0.9.3
-        env:
-          MONDOO_CONFIG_BASE64: ${{ secrets.MONDOO_SERVICE_ACCOUNT }}
-        with:
-          path: k8s/manifest.yaml
+name: "Mondoo Docker Image Action"
+description: "Scan Docker images for vulnerabilities and misconfigurations with Mondoo. This action supports both local images and images within remote registries."
+branding:
+  icon: "shield"
+  color: "purple"
+inputs:
+  image:
+    description: Docker image ID or name:tag to scan.
+    required: true
+  log-level:
+    description: >-
+      Sets the log level: error, warn, info, debug, trace (default "info")
+    default: info
+    required: false
+  output:
+    description: >-
+      Set the output format for scan results: compact, yaml, json, junit, csv, summary, full, report (default "compact")
+    default: compact
+    required: false
+  score-threshold:
+    description: >-
+      Sets the score threshold for scans. Scores that fall below the threshold will exit 1. (default "0" - job continues regardless of the score returned by a scan).
+    default: "0"
+    required: false
+  service-account-credentials:
+    description: "Base64 encoded service account credentials used to authenticate with Mondoo Platform"
+    required: false
+runs:
+  using: "docker"
+  image: "docker://mondoo/cnspec:7"
+  args:
+    - scan
+    - docker
+    - image
+    - ${{ inputs.image }}
+    - --output
+    - ${{ inputs.output }}
+    - --score-threshold
+    - ${{ inputs.score-threshold }}
+    - --log-level
+    - ${{ inputs.log-level }}
+  env:
+    MONDOO_CONFIG_BASE64: ${{ inputs.service-account-credentials }}
